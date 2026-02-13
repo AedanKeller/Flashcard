@@ -3,190 +3,706 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcard Generator</title>
+    <title>FlashMaster Pro</title>
     <style>
-        /* Global styles */
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f7fafc;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            font-weight: bold;
-            letter-spacing: 1px;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #2c2c2c;
+            overflow-x: hidden;
         }
 
-        p {
-            color: #34495e;
-            font-size: 1.2rem;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
             text-align: center;
-            max-width: 600px;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        input[type="file"] {
-            font-size: 1rem;
-            padding: 12px 20px;
-            border: none;
-            background-color: #af6766;
-            color: white;
-            cursor: pointer;
-            border-radius: 25px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            padding: 40px 0;
+            animation: fadeInDown 0.8s ease;
+            border-bottom: 2px solid #f5f5f5;
             margin-bottom: 40px;
         }
 
-        input[type="file"]:hover {
-            background-color: #20d5db;
-            transform: scale(1.05);
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            color: #ff6b35;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
         }
 
-        /* Flashcards container */
-        #flashcards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Increased flashcard size */
-            gap: 40px;
-            padding: 20px;
-            max-width: 1200px;
-            width: 100%;
-            justify-items: center;
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 300;
         }
 
-        /* Flashcard design */
-        .flashcard {
-            width: 300px; /* Increased size */
-            height: 200px; /* Increased height */
-            perspective: 1000px;
-            transition: transform 0.6s ease;
-            cursor: pointer;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: #fafafa;
+            border: 1px solid #f0f0f0;
             border-radius: 12px;
-            background-color: #fff;
-            border: 2px solid #333;
-            overflow: hidden;
+            padding: 30px;
+            margin-bottom: 40px;
+            animation: fadeIn 1s ease;
         }
 
-        .flashcard:hover {
-            transform: translateY(-10px);
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #ff6b35;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            text-align: center;
+            background: #fafafa;
+            border: 2px dashed #ff6b35;
+            border-radius: 12px;
+            padding: 50px;
+            margin-bottom: 40px;
+            animation: fadeIn 1.2s ease;
+        }
+
+        .upload-section h2 {
+            color: #2c2c2c;
+            font-weight: 300;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .upload-section p {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 25px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-button {
+            background: #ff6b35;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
+        }
+
+        .file-input-button:hover {
+            background: #ff5722;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        /* Mode Selection */
+        .mode-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        #modeSelectionSection h2 {
+            color: #2c2c2c;
+            font-weight: 300;
+            margin-bottom: 30px;
+        }
+
+        .mode-card {
+            background: #ffffff;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 35px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff6b35;
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.15);
+        }
+
+        .mode-card.active {
+            border-color: #ff6b35;
+            background: #fff5f2;
+        }
+
+        .mode-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .mode-title {
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #2c2c2c;
+        }
+
+        .mode-description {
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        /* Study Area */
+        .study-area {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .study-area.active {
+            display: block;
+        }
+
+        /* Classic Mode */
+        .flashcard-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .flashcard {
+            width: 600px;
+            height: 350px;
+            perspective: 1000px;
+            cursor: pointer;
         }
 
         .flashcard-inner {
             width: 100%;
             height: 100%;
             position: relative;
-            text-align: center;
             transform-style: preserve-3d;
-            transition: transform 0.6s ease;
+            transition: transform 0.6s;
         }
 
-        .flashcard.is-flipped .flashcard-inner {
+        .flashcard.flipped .flashcard-inner {
             transform: rotateY(180deg);
         }
 
-        .flashcard-front,
-        .flashcard-back {
+        .flashcard-face {
             position: absolute;
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-start;
-            padding: 15px;
-            font-size: 1.3rem;
-            font-weight: 600;
-            box-sizing: border-box;
             border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            font-size: 1.8rem;
+            font-weight: 300;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
-        /* Front of the card - Navy Blue */
         .flashcard-front {
-            background-color: #67839e;  /* Navy Blue */
+            background: #ff6b35;
             color: white;
-            overflow-y: scroll;
-            max-height: 100%;  /* Allow scroll */
+            border: 2px solid #ff6b35;
+        }
+
+        .flashcard-back {
+            background: white;
+            color: #2c2c2c;
+            transform: rotateY(180deg);
+            overflow-y: auto;
+            border: 2px solid #f0f0f0;
+            font-size: 1.3rem;
+            line-height: 1.6;
+        }
+
+        /* Quiz Mode */
+        .quiz-container {
+            background: #fafafa;
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 50px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .quiz-question {
+            font-size: 1.6rem;
+            font-weight: 300;
+            margin-bottom: 35px;
+            text-align: center;
+            color: #2c2c2c;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            color: #2c2c2c;
+        }
+
+        .quiz-option:hover {
+            border-color: #ff6b35;
+            background: #fff5f2;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.correct {
+            border-color: #4caf50;
+            background: #f1f8f4;
+            animation: pulse 0.5s ease;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f44336;
+            background: #fef1f0;
+            animation: shake 0.5s ease;
+        }
+
+        /* Match Game */
+        .match-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .match-card {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c2c2c;
+        }
+
+        .match-card:hover {
+            border-color: #ff6b35;
+            background: #fff5f2;
+            transform: scale(1.05);
+        }
+
+        .match-card.selected {
+            border-color: #ff6b35;
+            background: #fff5f2;
+        }
+
+        .match-card.matched {
+            border-color: #4caf50;
+            background: #f1f8f4;
+            pointer-events: none;
+            animation: matchPulse 0.6s ease;
+        }
+
+        .match-card.wrong {
+            animation: shake 0.5s ease;
+        }
+
+        /* Navigation Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: white;
+            border: 2px solid #f0f0f0;
+            color: #2c2c2c;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .btn:hover {
+            border-color: #ff6b35;
+            background: #fff5f2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background: #ff6b35;
+            border-color: #ff6b35;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ff5722;
+            border-color: #ff5722;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+            border-color: #45a049;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: #f0f0f0;
+            border-radius: 8px;
+            height: 8px;
+            margin-bottom: 35px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #ff6b35;
+            border-radius: 8px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes matchPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Result Screen */
+        .result-screen {
+            background: #fafafa;
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 60px;
+            text-align: center;
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        .result-emoji {
+            font-size: 5rem;
+            margin-bottom: 25px;
+            animation: pulse 2s infinite;
+        }
+
+        .result-title {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 20px;
+            color: #2c2c2c;
+        }
+
+        .result-stats {
+            font-size: 1.2rem;
+            margin-bottom: 35px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .result-stats strong {
+            color: #ff6b35;
+            font-weight: 600;
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Card counter */
+        .card-counter {
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 25px;
+            color: #999;
+            font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .flashcard-front::-webkit-scrollbar {
-            width: 5px;
+        /* Streak indicator */
+        .streak-indicator {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: #ff6b35;
+            border-radius: 50px;
+            padding: 12px 24px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: none;
+            animation: fadeIn 0.5s ease;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
         }
 
-        .flashcard-front::-webkit-scrollbar-thumb {
-            background-color: #aaa;
-            border-radius: 10px;
+        .streak-indicator.active {
+            display: block;
         }
-
-        .flashcard-front::-webkit-scrollbar-track {
-            background-color: transparent;
-        }
-
-        /* Back of the card */
-        .flashcard-back {
-            background-color: #ecf0f1;  /* Light Gray */
-            color: #333;
-            transform: rotateY(180deg);
-            font-size: 1rem; /* Slightly smaller font size */
-            font-weight: 400;
-            text-align: left;
-            overflow-y: auto;
-            max-height: 100%;  /* Allow scroll */
-            line-height: 1.2; /* Reduced line height for less spacing */
-        }
-
-        .flashcard-back p {
-            margin: 0;
-            padding-right: 5px;
-        }
-
-        /* Review Later Checkbox */
-        .review-checkbox {
-            position: absolute;
-            bottom: 10px; /* Positioned back to bottom-right */
-            right: 10px;
-            background-color: transparent; /* Transparent background */
-            color: #333;
-            border: 2px solid #333; /* Light border for visibility */
-            border-radius: 8px;
-            width: 40px;
-            height: 40px;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-
-        .review-checkbox:hover {
-            transform: scale(1.1);
-            background-color: #f0f0f0;
-        }
-
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 FlashMaster Pro</h1>
+            <p>Master your knowledge with fun study modes!</p>
+        </div>
 
-    <h1>Flashcard Generator</h1>
-    <p>Upload a text file with terms and definitions separated by a colon (e.g., "Term: Definition").</p>
-    <input type="file" id="fileInput">
-    <div id="flashcards"></div>
+        <div class="streak-indicator" id="streakIndicator">
+            🔥 <span id="streakCount">0</span> Streak!
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number" id="totalCards">0</div>
+                <div class="stat-label">Total Cards</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="studiedCards">0</div>
+                <div class="stat-label">Studied</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="accuracy">0%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="currentStreak">0</div>
+                <div class="stat-label">Best Streak</div>
+            </div>
+        </div>
+
+        <div class="upload-section" id="uploadSection">
+            <h2 style="margin-bottom: 20px;">📚 Upload Your Flashcards</h2>
+            <p style="margin-bottom: 20px; opacity: 0.8;">Use format: "Term: Definition" (one per line)</p>
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" accept=".txt">
+                <div class="file-input-button">Choose File</div>
+            </div>
+        </div>
+
+        <div id="modeSelectionSection" class="hidden">
+            <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Choose Your Study Mode</h2>
+            <div class="mode-selection">
+                <div class="mode-card" data-mode="classic">
+                    <div class="mode-icon">🎴</div>
+                    <div class="mode-title">Classic Flashcards</div>
+                    <div class="mode-description">Flip cards to reveal answers</div>
+                </div>
+                <div class="mode-card" data-mode="quiz">
+                    <div class="mode-icon">🎯</div>
+                    <div class="mode-title">Quiz Mode</div>
+                    <div class="mode-description">Multiple choice challenge</div>
+                </div>
+                <div class="mode-card" data-mode="match">
+                    <div class="mode-icon">🎮</div>
+                    <div class="mode-title">Match Game</div>
+                    <div class="mode-description">Match terms with definitions</div>
+                </div>
+                <div class="mode-card" data-mode="speed">
+                    <div class="mode-icon">⚡</div>
+                    <div class="mode-title">Speed Round</div>
+                    <div class="mode-description">Quick fire flashcards</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Classic Mode -->
+        <div id="classicMode" class="study-area">
+            <div class="card-counter" id="classicCounter"></div>
+            <div class="flashcard-container">
+                <div class="flashcard" id="flashcard">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-face flashcard-front" id="flashcardFront">
+                            Click to start!
+                        </div>
+                        <div class="flashcard-face flashcard-back" id="flashcardBack">
+                            Definition appears here
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="previousCard()">⬅ Previous</button>
+                <button class="btn" onclick="shuffleCards()">🔀 Shuffle</button>
+                <button class="btn" onclick="nextCard()">Next ➡</button>
+                <button class="btn btn-primary" onclick="backToModes()">🏠 Change Mode</button>
+            </div>
+        </div>
+
+        <!-- Quiz Mode -->
+        <div id="quizMode" class="study-area">
+            <div class="progress-container">
+                <div class="progress-bar" id="quizProgress"></div>
+            </div>
+            <div class="quiz-container">
+                <div class="card-counter" id="quizCounter"></div>
+                <div class="quiz-question" id="quizQuestion"></div>
+                <div class="quiz-options" id="quizOptions"></div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="backToModes()">🏠 Change Mode</button>
+            </div>
+        </div>
+
+        <!-- Match Mode -->
+        <div id="matchMode" class="study-area">
+            <div class="card-counter" id="matchCounter"></div>
+            <div class="match-grid" id="matchGrid"></div>
+            <div class="controls">
+                <button class="btn" onclick="resetMatch()">🔄 Reset</button>
+                <button class="btn btn-primary" onclick="backToModes()">🏠 Change Mode</button>
+            </div>
+        </div>
+
+        <!-- Speed Mode -->
+        <div id="speedMode" class="study-area">
+            <div class="card-counter" id="speedCounter"></div>
+            <div class="flashcard-container">
+                <div class="flashcard" id="speedCard">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-face flashcard-front" id="speedFront">
+                            Get ready!
+                        </div>
+                        <div class="flashcard-face flashcard-back" id="speedBack">
+                            Definition
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-success" onclick="knowIt()">✅ Know It</button>
+                <button class="btn" onclick="dontKnow()">❌ Don't Know</button>
+                <button class="btn btn-primary" onclick="backToModes()">🏠 Change Mode</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="resultScreen" class="hidden">
+            <div class="result-screen">
+                <div class="result-emoji" id="resultEmoji">🎉</div>
+                <div class="result-title" id="resultTitle">Awesome!</div>
+                <div class="result-stats" id="resultStats"></div>
+                <button class="btn btn-success" onclick="playAgain()">🔄 Study Again</button>
+                <button class="btn btn-primary" onclick="backToModes()">🏠 Change Mode</button>
+            </div>
+        </div>
+    </div>
 
     <script>
+        let flashcards = [];
+        let currentCardIndex = 0;
+        let studiedCount = 0;
+        let correctAnswers = 0;
+        let totalQuestions = 0;
+        let currentStreak = 0;
+        let bestStreak = 0;
+        let currentMode = '';
+        let matchSelected = [];
+        let matchedPairs = 0;
+        let speedKnown = 0;
+        let matchStartIndex = 0; // Track where we are in the match game
+        let matchCardsPerRound = 6; // Number of pairs per round
+
+        // File upload handler
         document.getElementById('fileInput').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -194,72 +710,455 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const text = e.target.result;
-                generateFlashcards(parseFlashcards(text));
+                flashcards = parseFlashcards(text);
+                if (flashcards.length > 0) {
+                    updateStats();
+                    document.getElementById('uploadSection').classList.add('hidden');
+                    document.getElementById('modeSelectionSection').classList.remove('hidden');
+                }
             };
             reader.readAsText(file);
         });
 
         function parseFlashcards(text) {
             const lines = text.split('\n');
-            const flashcards = [];
+            const cards = [];
             lines.forEach(line => {
                 const parts = line.split(':');
-                if (parts.length === 2) {
-                    flashcards.push({
+                if (parts.length >= 2) {
+                    cards.push({
                         term: parts[0].trim(),
-                        definition: parts[1].trim()
+                        definition: parts.slice(1).join(':').trim()
                     });
                 }
             });
-            return flashcards;
+            return cards;
         }
 
-        function generateFlashcards(flashcards) {
-            const container = document.getElementById('flashcards');
-            container.innerHTML = '';
+        // Mode selection
+        document.querySelectorAll('.mode-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const mode = this.dataset.mode;
+                startMode(mode);
+            });
+        });
 
-            flashcards.forEach(card => {
-                const flashcard = document.createElement('div');
-                flashcard.className = 'flashcard';
+        function startMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.study-area').forEach(area => {
+                area.classList.remove('active');
+            });
+            document.getElementById('modeSelectionSection').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
 
-                const inner = document.createElement('div');
-                inner.className = 'flashcard-inner';
+            currentCardIndex = 0;
+            correctAnswers = 0;
+            totalQuestions = 0;
+            speedKnown = 0;
 
-                const front = document.createElement('div');
-                front.className = 'flashcard-front';
-                front.textContent = card.term;
+            switch(mode) {
+                case 'classic':
+                    startClassicMode();
+                    break;
+                case 'quiz':
+                    startQuizMode();
+                    break;
+                case 'match':
+                    startMatchMode();
+                    break;
+                case 'speed':
+                    startSpeedMode();
+                    break;
+            }
+        }
 
-                const back = document.createElement('div');
-                back.className = 'flashcard-back';
-                back.innerHTML = `<p>${card.definition}</p>`;
+        // Classic Mode
+        function startClassicMode() {
+            document.getElementById('classicMode').classList.add('active');
+            shuffleCards();
+            showCard();
+        }
 
-                const checkbox = document.createElement('button');
-                checkbox.className = 'review-checkbox';
-                checkbox.innerHTML = ''; // Empty initially
+        function showCard() {
+            if (flashcards.length === 0) return;
+            
+            const card = flashcards[currentCardIndex];
+            document.getElementById('flashcardFront').textContent = card.term;
+            document.getElementById('flashcardBack').textContent = card.definition;
+            document.getElementById('classicCounter').textContent = `Card ${currentCardIndex + 1} of ${flashcards.length}`;
+            
+            // Reset flip
+            document.getElementById('flashcard').classList.remove('flipped');
+        }
 
-                const emojis = ['🌟', '❤️', '🔥', '💡', '📚']; // List of possible emojis
-                checkbox.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Prevent the card flip
-                    if (checkbox.innerHTML === '') {
-                        checkbox.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-                    } else {
-                        checkbox.innerHTML = ''; // Clear emoji when unchecked
+        document.getElementById('flashcard').addEventListener('click', function() {
+            this.classList.toggle('flipped');
+            if (!this.dataset.counted) {
+                studiedCount++;
+                this.dataset.counted = 'true';
+                updateStats();
+            }
+        });
+
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+            showCard();
+            document.getElementById('flashcard').dataset.counted = '';
+        }
+
+        function previousCard() {
+            currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
+            showCard();
+            document.getElementById('flashcard').dataset.counted = '';
+        }
+
+        function shuffleCards() {
+            for (let i = flashcards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [flashcards[i], flashcards[j]] = [flashcards[j], flashcards[i]];
+            }
+            currentCardIndex = 0;
+            showCard();
+        }
+
+        // Quiz Mode
+        function startQuizMode() {
+            document.getElementById('quizMode').classList.add('active');
+            shuffleCards();
+            showQuizQuestion();
+        }
+
+        function showQuizQuestion() {
+            if (currentCardIndex >= flashcards.length) {
+                showResults();
+                return;
+            }
+
+            const card = flashcards[currentCardIndex];
+            document.getElementById('quizQuestion').textContent = card.term;
+            document.getElementById('quizCounter').textContent = `Question ${currentCardIndex + 1} of ${flashcards.length}`;
+            
+            // Generate options
+            const options = [card.definition];
+            while (options.length < 4 && flashcards.length >= 4) {
+                const randomCard = flashcards[Math.floor(Math.random() * flashcards.length)];
+                if (!options.includes(randomCard.definition)) {
+                    options.push(randomCard.definition);
+                }
+            }
+            
+            // Shuffle options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+
+            // Display options
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+            options.forEach(option => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'quiz-option';
+                optionDiv.textContent = option;
+                optionDiv.addEventListener('click', () => checkAnswer(option, card.definition, optionDiv));
+                optionsContainer.appendChild(optionDiv);
+            });
+
+            updateQuizProgress();
+        }
+
+        function checkAnswer(selected, correct, optionElement) {
+            totalQuestions++;
+            const allOptions = document.querySelectorAll('.quiz-option');
+            allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selected === correct) {
+                optionElement.classList.add('correct');
+                correctAnswers++;
+                currentStreak++;
+                if (currentStreak > bestStreak) {
+                    bestStreak = currentStreak;
+                }
+                updateStreakIndicator();
+            } else {
+                optionElement.classList.add('incorrect');
+                currentStreak = 0;
+                updateStreakIndicator();
+                // Show correct answer
+                allOptions.forEach(opt => {
+                    if (opt.textContent === correct) {
+                        opt.classList.add('correct');
                     }
                 });
+            }
 
-                inner.appendChild(front);
-                inner.appendChild(back);
-                flashcard.appendChild(inner);
-                flashcard.appendChild(checkbox); // Add the checkbox to the card
-                container.appendChild(flashcard);
+            updateStats();
+            setTimeout(() => {
+                currentCardIndex++;
+                showQuizQuestion();
+            }, 1500);
+        }
 
-                flashcard.addEventListener('click', () => {
-                    flashcard.classList.toggle('is-flipped');
-                });
+        function updateQuizProgress() {
+            const progress = ((currentCardIndex) / flashcards.length) * 100;
+            const progressBar = document.getElementById('quizProgress');
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = Math.round(progress) + '%';
+        }
+
+        // Match Mode
+        function startMatchMode() {
+            document.getElementById('matchMode').classList.add('active');
+            matchSelected = [];
+            matchedPairs = 0;
+            matchStartIndex = 0;
+            shuffleCards();
+            createMatchGrid();
+        }
+
+        function createMatchGrid() {
+            const grid = document.getElementById('matchGrid');
+            grid.innerHTML = '';
+            
+            // Calculate how many cards to show in this round
+            const remainingCards = flashcards.length - matchStartIndex;
+            const cardsThisRound = Math.min(matchCardsPerRound, remainingCards);
+            
+            // Get the cards for this round
+            const cardsToMatch = flashcards.slice(matchStartIndex, matchStartIndex + cardsThisRound);
+            const matchItems = [];
+            
+            cardsToMatch.forEach((card, index) => {
+                matchItems.push({ text: card.term, type: 'term', id: index });
+                matchItems.push({ text: card.definition, type: 'definition', id: index });
             });
+
+            // Shuffle
+            for (let i = matchItems.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [matchItems[i], matchItems[j]] = [matchItems[j], matchItems[i]];
+            }
+
+            matchItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'match-card';
+                card.textContent = item.text;
+                card.dataset.id = item.id;
+                card.dataset.type = item.type;
+                card.addEventListener('click', () => selectMatchCard(card, item));
+                grid.appendChild(card);
+            });
+
+            const totalPairs = flashcards.length;
+            const completedPairs = matchStartIndex;
+            document.getElementById('matchCounter').textContent = `Progress: ${completedPairs} of ${totalPairs} pairs completed`;
+        }
+
+        function selectMatchCard(cardElement, item) {
+            if (cardElement.classList.contains('matched') || cardElement.classList.contains('selected')) {
+                return;
+            }
+
+            if (matchSelected.length < 2) {
+                cardElement.classList.add('selected');
+                matchSelected.push({ element: cardElement, data: item });
+
+                if (matchSelected.length === 2) {
+                    checkMatch();
+                }
+            }
+        }
+
+        function checkMatch() {
+            const [first, second] = matchSelected;
+            
+            if (first.data.id === second.data.id && first.data.type !== second.data.type) {
+                // Correct match
+                first.element.classList.remove('selected');
+                second.element.classList.remove('selected');
+                first.element.classList.add('matched');
+                second.element.classList.add('matched');
+                matchedPairs++;
+                correctAnswers++;
+                currentStreak++;
+                if (currentStreak > bestStreak) {
+                    bestStreak = currentStreak;
+                }
+                updateStreakIndicator();
+                
+                // Check if all pairs in this round are matched
+                const remainingCards = flashcards.length - matchStartIndex;
+                const cardsThisRound = Math.min(matchCardsPerRound, remainingCards);
+                
+                if (matchedPairs === cardsThisRound) {
+                    matchStartIndex += cardsThisRound;
+                    
+                    // Check if we've completed all cards
+                    if (matchStartIndex >= flashcards.length) {
+                        setTimeout(() => showResults(), 1000);
+                    } else {
+                        // Move to next round
+                        setTimeout(() => {
+                            matchedPairs = 0;
+                            matchSelected = [];
+                            createMatchGrid();
+                        }, 1500);
+                    }
+                } else {
+                    const totalPairs = flashcards.length;
+                    const completedPairs = matchStartIndex + matchedPairs;
+                    document.getElementById('matchCounter').textContent = `Progress: ${completedPairs} of ${totalPairs} pairs completed`;
+                }
+            } else {
+                // Wrong match
+                first.element.classList.add('wrong');
+                second.element.classList.add('wrong');
+                currentStreak = 0;
+                updateStreakIndicator();
+                
+                setTimeout(() => {
+                    first.element.classList.remove('selected', 'wrong');
+                    second.element.classList.remove('selected', 'wrong');
+                }, 800);
+            }
+
+            totalQuestions++;
+            matchSelected = [];
+            updateStats();
+        }
+
+        function resetMatch() {
+            matchSelected = [];
+            matchedPairs = 0;
+            matchStartIndex = 0;
+            correctAnswers = 0;
+            totalQuestions = 0;
+            createMatchGrid();
+        }
+
+        // Speed Mode
+        function startSpeedMode() {
+            document.getElementById('speedMode').classList.add('active');
+            shuffleCards();
+            showSpeedCard();
+        }
+
+        function showSpeedCard() {
+            if (currentCardIndex >= flashcards.length) {
+                showResults();
+                return;
+            }
+
+            const card = flashcards[currentCardIndex];
+            document.getElementById('speedFront').textContent = card.term;
+            document.getElementById('speedBack').textContent = card.definition;
+            document.getElementById('speedCounter').textContent = `Card ${currentCardIndex + 1} of ${flashcards.length} | Known: ${speedKnown}`;
+            
+            // Auto flip after 1 second
+            setTimeout(() => {
+                document.getElementById('speedCard').classList.add('flipped');
+            }, 1000);
+        }
+
+        function knowIt() {
+            speedKnown++;
+            correctAnswers++;
+            totalQuestions++;
+            currentStreak++;
+            if (currentStreak > bestStreak) {
+                bestStreak = currentStreak;
+            }
+            updateStreakIndicator();
+            updateStats();
+            nextSpeedCard();
+        }
+
+        function dontKnow() {
+            totalQuestions++;
+            currentStreak = 0;
+            updateStreakIndicator();
+            updateStats();
+            nextSpeedCard();
+        }
+
+        function nextSpeedCard() {
+            document.getElementById('speedCard').classList.remove('flipped');
+            currentCardIndex++;
+            setTimeout(() => showSpeedCard(), 300);
+        }
+
+        // Results
+        function showResults() {
+            document.querySelectorAll('.study-area').forEach(area => {
+                area.classList.remove('active');
+            });
+            
+            const resultScreen = document.getElementById('resultScreen');
+            resultScreen.classList.remove('hidden');
+            
+            const percentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            
+            let emoji = '🎉';
+            let title = 'Great Job!';
+            
+            if (percentage >= 90) {
+                emoji = '🏆';
+                title = 'Outstanding!';
+            } else if (percentage >= 75) {
+                emoji = '🌟';
+                title = 'Excellent!';
+            } else if (percentage >= 60) {
+                emoji = '👍';
+                title = 'Good Work!';
+            } else {
+                emoji = '📚';
+                title = 'Keep Practicing!';
+            }
+            
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultStats').innerHTML = `
+                You got <strong>${correctAnswers}</strong> out of <strong>${totalQuestions}</strong> correct<br>
+                Accuracy: <strong>${percentage}%</strong><br>
+                Best Streak: <strong>${bestStreak}</strong> 🔥
+            `;
+        }
+
+        function playAgain() {
+            startMode(currentMode);
+        }
+
+        function backToModes() {
+            document.querySelectorAll('.study-area').forEach(area => {
+                area.classList.remove('active');
+            });
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('modeSelectionSection').classList.remove('hidden');
+            currentStreak = 0;
+            updateStreakIndicator();
+        }
+
+        // Stats updates
+        function updateStats() {
+            document.getElementById('totalCards').textContent = flashcards.length;
+            document.getElementById('studiedCards').textContent = studiedCount;
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+            document.getElementById('currentStreak').textContent = bestStreak;
+        }
+
+        function updateStreakIndicator() {
+            const indicator = document.getElementById('streakIndicator');
+            const streakCount = document.getElementById('streakCount');
+            
+            if (currentStreak >= 3) {
+                indicator.classList.add('active');
+                streakCount.textContent = currentStreak;
+            } else {
+                indicator.classList.remove('active');
+            }
         }
     </script>
-
 </body>
 </html>
 
