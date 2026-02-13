@@ -138,7 +138,7 @@
         /* Mode Selection */
         .mode-selection {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             margin-bottom: 40px;
         }
@@ -352,6 +352,102 @@
 
         .match-card.wrong {
             animation: shake 0.5s ease;
+        }
+
+        /* Overview Mode */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .overview-card {
+            width: 100%;
+            height: 200px;
+            perspective: 1000px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .overview-card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .overview-card.flipped .overview-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .overview-card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            font-weight: 400;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .overview-card-front {
+            background: #ff6b35;
+            color: white;
+            border: 2px solid #ff6b35;
+            font-weight: 500;
+        }
+
+        .overview-card-back {
+            background: white;
+            color: #2c2c2c;
+            transform: rotateY(180deg);
+            border: 2px solid #f0f0f0;
+            line-height: 1.5;
+        }
+
+        .overview-card:hover .overview-card-face {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .mark-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 36px;
+            height: 36px;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            font-size: 1.2rem;
+        }
+
+        .mark-button:hover {
+            background: #fff5f2;
+            border-color: #ff6b35;
+            transform: scale(1.1);
+        }
+
+        .mark-button.marked {
+            background: #ff6b35;
+            border-color: #ff6b35;
+            color: white;
         }
 
         /* Navigation Controls */
@@ -582,6 +678,11 @@
         <div id="modeSelectionSection" class="hidden">
             <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Choose Your Study Mode</h2>
             <div class="mode-selection">
+                <div class="mode-card" data-mode="overview">
+                    <div class="mode-icon">📋</div>
+                    <div class="mode-title">Browse All</div>
+                    <div class="mode-description">See all cards at once</div>
+                </div>
                 <div class="mode-card" data-mode="classic">
                     <div class="mode-icon">🎴</div>
                     <div class="mode-title">Classic Flashcards</div>
@@ -602,6 +703,17 @@
                     <div class="mode-title">Speed Round</div>
                     <div class="mode-description">Quick fire flashcards</div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Overview Mode -->
+        <div id="overviewMode" class="study-area">
+            <div class="card-counter" id="overviewCounter"></div>
+            <div id="overviewGrid" class="overview-grid"></div>
+            <div class="controls">
+                <button class="btn btn-success" onclick="reviewMarkedCards()">📖 Review Marked Cards</button>
+                <button class="btn" onclick="clearAllMarks()">🔄 Clear All Marks</button>
+                <button class="btn btn-primary" onclick="backToModes()">🏠 Change Mode</button>
             </div>
         </div>
 
@@ -768,6 +880,9 @@
             }
 
             switch(mode) {
+                case 'overview':
+                    startOverviewMode();
+                    break;
                 case 'classic':
                     startClassicMode();
                     break;
@@ -781,6 +896,109 @@
                     startSpeedMode();
                     break;
             }
+        }
+
+        // Overview Mode
+        function startOverviewMode() {
+            document.getElementById('overviewMode').classList.add('active');
+            renderOverviewGrid();
+        }
+
+        function renderOverviewGrid() {
+            const grid = document.getElementById('overviewGrid');
+            grid.innerHTML = '';
+
+            const markedCount = unknownCards.length;
+            const modeText = isReviewMode ? ' (Review Mode)' : '';
+            document.getElementById('overviewCounter').textContent = `Viewing ${flashcards.length} cards | ${markedCount} marked for review${modeText}`;
+
+            flashcards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'overview-card';
+                cardElement.dataset.index = index;
+
+                const inner = document.createElement('div');
+                inner.className = 'overview-card-inner';
+
+                const front = document.createElement('div');
+                front.className = 'overview-card-face overview-card-front';
+                front.textContent = card.term;
+
+                const back = document.createElement('div');
+                back.className = 'overview-card-face overview-card-back';
+                back.textContent = card.definition;
+
+                const markBtn = document.createElement('div');
+                markBtn.className = 'mark-button';
+                
+                // Check if this card is already marked
+                const isMarked = unknownCards.some(c => c.term === card.term && c.definition === card.definition);
+                if (isMarked) {
+                    markBtn.classList.add('marked');
+                    markBtn.textContent = '⭐';
+                } else {
+                    markBtn.textContent = '☆';
+                }
+
+                markBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleMarkCard(card, markBtn);
+                });
+
+                inner.appendChild(front);
+                inner.appendChild(back);
+                cardElement.appendChild(inner);
+                cardElement.appendChild(markBtn);
+
+                cardElement.addEventListener('click', () => {
+                    cardElement.classList.toggle('flipped');
+                });
+
+                grid.appendChild(cardElement);
+            });
+        }
+
+        function toggleMarkCard(card, buttonElement) {
+            const isMarked = unknownCards.some(c => c.term === card.term && c.definition === card.definition);
+            
+            if (isMarked) {
+                // Remove from unknown cards
+                unknownCards = unknownCards.filter(c => !(c.term === card.term && c.definition === card.definition));
+                buttonElement.classList.remove('marked');
+                buttonElement.textContent = '☆';
+            } else {
+                // Add to unknown cards
+                unknownCards.push(card);
+                buttonElement.classList.add('marked');
+                buttonElement.textContent = '⭐';
+            }
+
+            // Update counter
+            const markedCount = unknownCards.length;
+            const modeText = isReviewMode ? ' (Review Mode)' : '';
+            document.getElementById('overviewCounter').textContent = `Viewing ${flashcards.length} cards | ${markedCount} marked for review${modeText}`;
+        }
+
+        function reviewMarkedCards() {
+            if (unknownCards.length === 0) {
+                alert('No cards marked for review!');
+                return;
+            }
+            
+            isReviewMode = true;
+            flashcards = [...unknownCards];
+            const tempUnknown = [...unknownCards];
+            unknownCards = [];
+            currentCardIndex = 0;
+            
+            // Let user choose which mode to review in
+            document.getElementById('overviewMode').classList.remove('active');
+            document.getElementById('modeSelectionSection').classList.remove('hidden');
+        }
+
+        function clearAllMarks() {
+            unknownCards = [];
+            renderOverviewGrid();
         }
 
         // Classic Mode
